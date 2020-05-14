@@ -43,22 +43,6 @@ def convert_to_spc(filename):
 	kYDim = 256
 	im = im.resize( (kXDim, kYDim) )
 
-	# We assume the image is sRGB encoded, which is a 'perceptually linear' encoding.
-	# That means that a number twice as big will appear twice as bright (roughly speaking).
-	# But PIL does not consider this when converting to a 1-bit dithered image, where
-	# the 1-bit image is *actually* linear (a 50% coverage of pixels will be 50%
-	# linear brightness *not* 50% perceptual brightness when compared to 100%).
-	# So we compensate by converting from perceptually linear to actually linear
-	# before we convert to 1-bit dithered.
-	convertToLinear = True #< Feel free to skip this step
-	if convertToLinear:
-		im = im.convert("F") # Converts to single channel floats, each pixel 0-255
-		for y in range(kYDim):
-			for x in range(kXDim):
-				pixel = im.getpixel((x,y))
-				pixel = math.pow(pixel / 255.0, 2.2) * 255.0 # Approximate sRGB to linear
-				im.putpixel((x,y),pixel)
-
 	# Convert to 1-bit dithered and save the preview.
 	im = im.convert("1")
 	print("Writing " + basename + "_preview" + extension)
