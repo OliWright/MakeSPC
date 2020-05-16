@@ -9,6 +9,6 @@ You just need to provide a source image in any popular format. Be sure to crop y
 [Pillow](https://pillow.readthedocs.io/en/stable/)
 
 ## Usage
-`python makespc.py \<input image filename\>`
+`python makespc.py <input image filename>`
 
 The script will write out a preview image in the same format as the input, and it will write a .spc file that can be copied to a disk image for viewing on an Amstrad PCW8256 or similar.
