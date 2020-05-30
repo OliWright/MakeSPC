@@ -25,17 +25,13 @@
 # Simple script to convert images to the Stop Press Canvas .SPC format which
 # is used on Amstrad PCW8256 and friends.
 
-import sys
 import os
 import array
-import math
 from PIL import Image
 
-def convert_to_spc(filename):
+def convert_to_spc(input_filename, preview_filename, output_filename):
 	# Load the image.
-	basename, extension = os.path.splitext(filename)
-	print("Reading " + basename + extension)
-	im = Image.open(basename + extension)
+	im = Image.open(input_filename)
 
 	# Resize it to the size of the PCW8256 screen.
 	print("Converting")
@@ -43,10 +39,13 @@ def convert_to_spc(filename):
 	kYDim = 256
 	im = im.resize( (kXDim, kYDim) )
 
-	# Convert to 1-bit dithered and save the preview.
+	# Convert to 1-bit dithered
 	im = im.convert("1")
-	print("Writing " + basename + "_preview" + extension)
-	im.save(basename + "_preview" + extension)
+
+	# Make a preview image by doubling the height, otherwise it's squashed
+	preview_im = im.resize( (kXDim, kYDim * 2) )
+	print("Writing " + preview_filename)
+	preview_im.save(preview_filename)
 
 	# Create an array of bytes that will be our binary file image.
 	data = array.array('B') # B means unsigned byte
@@ -67,12 +66,17 @@ def convert_to_spc(filename):
 				data.append( byte )
 
 	# Now we just dump the binary array to the output file.
-	print("Writing " + basename + ".spc")
-	f = open(basename + ".spc", 'wb')
+	print("Writing " + output_filename)
+	f = open(output_filename, 'wb')
 	data.tofile(f)
 	f.close()
 
-if len(sys.argv) != 2:
-	print("Usage: makespc.py <input_image_filename>")
-else:
-	convert_to_spc(sys.argv[1])
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+	    print("Usage: makespc.py <input_image_filename>")
+    else:
+        input_filename = sys.argv[1]
+        basename, extension = os.path.splitext(full_input_filename)
+        preview_filename = basename + ".png"
+        output_filename = basename + ".spc"
+        convert_to_spc(input_filename, preview_filename, output_filename)
